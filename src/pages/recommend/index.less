@@ -1,0 +1,52 @@
+@import "~common/style/variable.less";
+
+.recommend {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  .recommend-banner {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 40%;
+    overflow: hidden;
+    .banner-inner {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      background-color: #333;
+      .carousel-block {
+        height: 100%;
+        .am-carousel-wrap-dot-active {
+          span {
+            width: 16px;
+            height: 8px;
+            margin: 0 3px;
+            border-radius: 4px;
+            background: #ffffff;
+            background-color: #ffffff;
+          }
+        }
+      }
+      * {
+        touch-action: none
+      }
+    }
+  }
+  .recommend-list-content {
+    .list-title {
+      height: 65px;
+      line-height: 65px;
+      text-align: center;
+      font-size: 14px;
+      color: @color-theme;
+    }
+    .list-content {
+      .item {
+        padding: 0 20px 20px 20px;
+      }
+    }
+  }
+}

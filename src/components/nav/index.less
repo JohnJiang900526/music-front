@@ -1,0 +1,26 @@
+@import "~common/style/variable.less";
+
+.nav-content {
+  height: 44px;
+  width: 100%;
+  .tab-content {
+    display: flex;
+    height: 44px;
+    line-height: 44px;
+    font-size: 14px;
+    .tab-item {
+      display: block;
+      flex: 1;
+      text-align: center;
+      .text {
+        padding-bottom: 5px;
+      }
+      &.active {
+        .text {
+          color: @color-theme;
+          border-bottom: 2px solid @color-theme;
+        }
+      }
+    }
+  }
+}

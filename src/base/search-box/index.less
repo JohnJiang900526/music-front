@@ -1,0 +1,30 @@
+@import "~common/style/variable.less";
+
+.search-box {
+  display: flex;
+  -ms-flex-align: center;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 6px;
+  height: 40px;
+  background: @color-highlight-background;
+  border-radius: 6px;
+  .icon-search {
+    font-size: 24px;
+    color: #222;
+  }
+  .input {
+    flex: 1;
+    margin: 0 5px;
+    line-height: 18px;
+    background: @color-highlight-background;
+    color: #fff;
+    font-size: 14px;
+    outline: 0;
+  }
+  .icon-dismiss {
+    font-size: @font-size-medium-x;
+    color: @color-background;
+  }
+}

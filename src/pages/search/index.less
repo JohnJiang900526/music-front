@@ -1,0 +1,107 @@
+@import "~common/style/variable.less";
+
+.search {
+  height: 100%;
+  width: 100%;
+  .search-box-warp {
+    margin: 20px;
+  }
+  .shortcut-wrapper {
+    position: absolute;
+    top: 178px;
+    bottom: 0;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    .hot-key-content {
+      margin: 0 20px 20px 20px;
+      .title {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: @color-text-l;
+      }
+      .item {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 20px 10px 0;
+        border-radius: 6px;
+        background: @color-highlight-background;
+        font-size: @font-size-medium;
+        color: @color-text-d;
+      }
+    }
+    .search-history {
+      position: relative;
+      margin: 0 20px;
+      .title {
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center;
+        height: 40px;
+        font-size: @font-size-medium;
+        color: @color-text-l;
+        .text {
+          flex: 1;
+        }
+        .clear {
+          position: relative;
+        }
+      }
+      .search-list {
+        .search-item {
+          display: flex;
+          align-items: center;
+          height: 40px;
+          overflow: hidden;
+          .text {
+            flex: 1;
+            color: @color-text-l;
+          }
+          .icon {
+            position: relative;
+            .icon-delete {
+              font-size: @font-size-small;
+              color: @color-text-d;
+            }
+          }
+        }
+      }
+    }
+  }
+  .suggest {
+    position: absolute;
+    top: 158px;
+    bottom: 0;
+    width: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: #222;
+    .suggest-lists {
+      padding: 0 30px;
+      .suggest-item {
+        display: flex;
+        align-items: center;
+        padding-bottom: 20px;
+        .icon {
+          flex: 0 0 30px;
+          width: 30px;
+          .icon-music {
+            font-size: 14px;
+            color: rgba(255,255,255,0.3);
+          }
+        }
+        .name {
+          flex: 1;
+          font-size: 14px;
+          color: rgba(255,255,255,0.3);
+          overflow: hidden;
+          .text {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+}
