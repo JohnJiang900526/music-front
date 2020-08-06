@@ -4,6 +4,7 @@ import Lyric from 'lyric-parser';
 import store from 'store';
 import "./index.less";
 import ProgressBar from "components/progress-bar";
+import ProgressCircle from "base/progress-circle";
 import { playMode } from 'common/js/config'
 import { prefixStyle } from "common/js/dom";
 import * as Actions from 'store/actions';
@@ -22,6 +23,10 @@ class Player extends Component {
         display: "none",
         opacity: 0
       },
+      miniStyle: {
+        display: "none"
+      },
+      radius: 32,
       currentShow: "cd",
       song: {},
       songReady: false, // 歌曲是否加載完畢
@@ -39,9 +44,33 @@ class Player extends Component {
       const song = playlist[currentIndex] || {};
 
       if (fullScreen) {
-        this.normalShowHandle(fullScreen);
+        if (fullScreen === this.state.fullScreen) {
+          return false;
+        }
+
+        this.setState({ 
+          normalStyle: { display: "block", opacity: 1 },
+          fullScreen: true
+        }, () => {
+          this.Audio.play();
+        });
       } else {
-        this.normalHideHandle(fullScreen);
+        let miniStyle = {};
+        if (fullScreen === this.state.fullScreen) {
+          return false;
+        }
+
+        if (playlist.length > 0) {
+          miniStyle = {};
+        } else {
+          miniStyle = { display: "none" };
+        }
+
+        this.setState({ fullScreen: false }, () => {
+          this.delay(() => {
+            this.setState({ miniStyle, normalStyle: { display: "none", opacity: 0 } });
+          });
+        });
       }
 
       if (this.state.song.id !== song.id) {
@@ -60,12 +89,6 @@ class Player extends Component {
       }
 
       this.setState({ playing, song });
-
-      if (!playing) {
-        if (fullScreen) {
-          this.syncWrapperTransform('imageWrapper', 'image');
-        }
-      }
     });
   }
 
@@ -92,7 +115,18 @@ class Player extends Component {
   computeCenterClass () {
     const play = "icon-play";
     const pause = "icon-pause";
-    if (this.state.playing) {
+    if (this.props.playing) {
+      return this.state.songReady ? pause : `${pause} disable`;
+    } else {
+      return this.state.songReady ? play : `${play} disable`;
+    }
+  }
+
+  // mini播放暂停className
+  computeMiniCenterClass () {
+    const play = "icon-mini icon-play-mini";
+    const pause = "icon-mini icon-pause-mini";
+    if (this.props.playing) {
       return this.state.songReady ? pause : `${pause} disable`;
     } else {
       return this.state.songReady ? play : `${play} disable`;
@@ -131,35 +165,6 @@ class Player extends Component {
     }
   }
 
-  // 显示正常播放器面板
-  normalShowHandle(full) {
-    const { fullScreen } = this.state;
-
-    if (fullScreen === full) {
-      return false;
-    }
-
-    this.setState({ 
-      normalStyle: { display: "block", opacity: 1 },
-      fullScreen: true
-    }, () => {
-      this.Audio.play();
-    });
-  }
-  // 隐藏正常播放器面板
-  normalHideHandle(full) {
-    const { fullScreen } = this.state;
-    if (fullScreen === full) {
-      return false;
-    }
-
-    this.setState({ fullScreen: false }, () => {
-      this.delay(() => {
-        this.setState({ normalStyle: { display: "none", opacity: 0 } });
-      });
-    });
-  }
-
   // 已经开始播放
   onPlaying() {
     const songReady = true;
@@ -174,13 +179,28 @@ class Player extends Component {
   }
 
   // 播放的切换事件
-  togglePlaying () {
+  togglePlaying (type) {
     if (!this.state.songReady) {
       return false;
     }
 
     const { playing } = this.props;
+    // 在设置playing之前获取 否则获取无效
+    if (playing) {
+      if (this.props.fullScreen) {
+        this.syncWrapperTransform('imageWrapper', 'image');
+      } else {
+        this.syncWrapperTransform('miniWrapper', 'miniImage');
+      }
+    }
+
     this.props.handlePlaying(!playing);
+
+    if (type === "mini") {
+      this.props.handleFullScreen(false);
+    } else if (type === "normal") {
+      this.props.handleFullScreen(true);
+    }
 
     if (playing) {
       this.Audio.pause();
@@ -459,7 +479,7 @@ class Player extends Component {
             src={ this.state.song.image }/>
         </div>
         <div className={ this.computeNavClass("top", this.state.fullScreen) }>
-          <div onClick={() => { this.normalHideHandle() }} className="back">
+          <div onClick={() => { this.props.handleFullScreen(false) }} className="back">
             <i className="icon-back"></i>
           </div>
           <div className="title">{ this.state.song.name }</div>
@@ -519,7 +539,7 @@ class Player extends Component {
             </div>
             <div className={ this.computeClass("icon i-center") }>
               <i
-                onClick={ () => { this.togglePlaying() } } 
+                onClick={ () => { this.togglePlaying("normal") } } 
                 className={ this.computeCenterClass() }/>
             </div>
             <div className={ this.computeClass("icon i-right") }>
@@ -539,7 +559,32 @@ class Player extends Component {
   // mini播放器
   miniPlayer () {
     return (
-      <div className="mini-player"></div>
+      <div className="mini-player" style={this.state.miniStyle}>
+        <div onClick={() => { this.props.handleFullScreen(true) }} className="icon">
+          <div ref={(e) => { this.miniWrapper = e }} className="imgWrapper">
+            <img
+              ref={(e) => { this.miniImage = e }}
+              width="40" height="40" 
+              alt=""
+              className={this.computedImageClass("")}
+              src={ this.state.song.image }/>
+          </div>
+        </div>
+        <div onClick={() => { this.props.handleFullScreen(true) }} className="text">
+          <h2 className="name">{ this.state.song.name }</h2>
+          <p className="desc">{ this.state.song.singer }</p>
+        </div>
+        <div className="control">
+          <ProgressCircle percent={this.percent()} radius={ this.state.radius }>
+            <i
+              onClick={ () => { this.togglePlaying("mini") } } 
+              className={this.computeMiniCenterClass()}></i>
+          </ProgressCircle>
+        </div>
+        <div className="control">
+          <i className="icon-playlist"></i>
+        </div>
+      </div>
     );
   }
 
