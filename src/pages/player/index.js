@@ -198,6 +198,10 @@ class Player extends Component {
     const currentTime = this.Audio.currentTime;
 
     this.setState({ currentTime });
+    // 更新歌词
+    if (this.state.currentLyric) {
+      this.state.currentLyric.seek(currentTime * 1000);
+    }
   }
 
   // 停止事件
@@ -285,6 +289,7 @@ class Player extends Component {
 
   // 清除歌词事件
   clearLyric = (fn) => {
+    this.Lyric = "";
     if (this.state.currentLyric) {
       this.state.currentLyric.stop();
     }
