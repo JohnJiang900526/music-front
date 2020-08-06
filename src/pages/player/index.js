@@ -51,7 +51,6 @@ class Player extends Component {
       this.setState({ playing, song });
 
       if (!playing) {
-        this.toggleLyricPlay(false);
         if (fullScreen) {
           this.syncWrapperTransform('imageWrapper', 'image');
         }
@@ -160,31 +159,13 @@ class Player extends Component {
     const songReady = true;
     this.setState({ songReady }, () => {
       this.props.handlePlaying(true);
-      this.getLyric(() => {
-        const { currentTime } = this.state;
-        this.state.currentLyric.seek && 
-        this.state.currentLyric.seek(currentTime * 1000);
-      });
+      this.getLyric(() => {});
     });
   }
 
   // 播放发生错误
   onError(e) {
     console.log(e.message);
-  }
-
-  // 歌词播放事件
-  toggleLyricPlay(play) {
-    if (play) {
-      if (this.state.currentLyric) {
-        this.state.currentLyric.stop();
-        this.state.currentLyric.seek(this.state.currentTime * 1000);
-      }
-    } else {
-      if (this.state.currentLyric) {
-        this.state.currentLyric.stop();
-      }
-    }
   }
 
   // 播放的切换事件
@@ -198,10 +179,8 @@ class Player extends Component {
 
     if (playing) {
       this.Audio.pause();
-      this.toggleLyricPlay(false);
     } else {
       this.Audio.play();
-      this.toggleLyricPlay(true);
     }
   }
 
@@ -215,7 +194,6 @@ class Player extends Component {
   // 停止事件
   onPause() {
     this.props.handlePlaying(false);
-    this.toggleLyricPlay(false);
   }
 
   // 播放结束
@@ -251,7 +229,6 @@ class Player extends Component {
 
     this.props.handleCurrentIndex(index);
     this.props.handlePlaying(false);
-    this.toggleLyricPlay(false);
     this.setState({ songReady });
     this.delay(() => {
       this.togglePlaying();
@@ -278,7 +255,6 @@ class Player extends Component {
 
     this.props.handleCurrentIndex(index);
     this.props.handlePlaying(false);
-    this.toggleLyricPlay(false);
     this.setState({ songReady });
     this.delay(() => {
       this.togglePlaying();
