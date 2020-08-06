@@ -314,13 +314,14 @@ class Player extends Component {
 
     if (!song.getLyric) { return false; }
     song.getLyric().then((lyric) => {
-      this.delay(() => {
-        const currentLyric = new Lyric(lyric, this.handleLyric);
+      if (this.Lyric !== lyric) {
+        this.Lyric = lyric;
 
+        const currentLyric = new Lyric(lyric, this.handleLyric);
         this.setState({ lyric, currentLyric }, () => {
           fn && fn();
         });
-      });
+      }
     }).catch(() => {
       this.setState({ lyric: "", currentLyric: null });
     });
