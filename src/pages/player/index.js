@@ -45,7 +45,18 @@ class Player extends Component {
       }
 
       if (this.state.song.id !== song.id) {
-        
+        if (this.state.currentLyric) {
+          this.state.currentLyric.stop();
+        }
+
+        this.clearLyric(() => {
+          this.getLyric(() => {
+            if (!this.state.currentLyric) {
+              return false;
+            }
+            this.state.currentLyric.seek(this.state.currentTime * 1000);
+          });
+        });
       }
 
       this.setState({ playing, song });
@@ -123,21 +134,16 @@ class Player extends Component {
   // 显示正常播放器面板
   normalShowHandle(full) {
     const { fullScreen } = this.state;
-    
+
     if (fullScreen === full) {
       return false;
     }
 
-    this.setState({ normalStyle: { display: "block", opacity: 1 }}, () => {
-      this.delay(() => {
-        this.setState({ fullScreen: full });
-      });
-    });
-
-    this.setState({fullScreen: true }, () => {
-      this.delay(() => {
-        this.Audio.play();
-      });
+    this.setState({ 
+      normalStyle: { display: "block", opacity: 1 },
+      fullScreen: true
+    }, () => {
+      this.Audio.play();
     });
   }
   // 隐藏正常播放器面板
@@ -159,7 +165,6 @@ class Player extends Component {
     const songReady = true;
     this.setState({ songReady }, () => {
       this.props.handlePlaying(true);
-      this.getLyric(() => {});
     });
   }
 
@@ -182,6 +187,10 @@ class Player extends Component {
     } else {
       this.Audio.play();
     }
+
+    if (this.state.currentLyric) {
+      this.state.currentLyric.togglePlay();
+    }
   }
 
   // 事件更新事件
@@ -194,6 +203,9 @@ class Player extends Component {
   // 停止事件
   onPause() {
     this.props.handlePlaying(false);
+    if (this.state.currentLyric) {
+      this.state.currentLyric.stop();
+    }
   }
 
   // 播放结束
@@ -271,6 +283,22 @@ class Player extends Component {
     });
   }
 
+  // 清除歌词事件
+  clearLyric = (fn) => {
+    if (this.state.currentLyric) {
+      this.state.currentLyric.stop();
+    }
+
+    this.setState({
+      currentTime: 0,
+      currentLineNum: 0,
+      playingLyric: "",
+      currentLyric: null
+    }, () => {
+      fn && fn();
+    });
+  }
+
   // 歌词回调事件
   handleLyric = ({ lineNum, txt }) => {
     const currentLineNum = lineNum;
@@ -286,10 +314,12 @@ class Player extends Component {
 
     if (!song.getLyric) { return false; }
     song.getLyric().then((lyric) => {
-      const currentLyric = new Lyric(lyric, this.handleLyric);
+      this.delay(() => {
+        const currentLyric = new Lyric(lyric, this.handleLyric);
 
-      this.setState({ lyric, currentLyric }, () => {
-        fn && fn();
+        this.setState({ lyric, currentLyric }, () => {
+          fn && fn();
+        });
       });
     }).catch(() => {
       this.setState({ lyric: "", currentLyric: null });
@@ -524,10 +554,12 @@ class Player extends Component {
       this.Audio.currentTime = currentTime;
     }
 
-    this.timer && clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
+    this.delay(() => {
       this.Audio.play();
-    }, 300);
+      if (this.state.currentLyric) {
+        this.state.currentLyric.seek(currentTime * 1000);
+      }
+    });
   }
 
   // 计算歌曲播放的百分比
