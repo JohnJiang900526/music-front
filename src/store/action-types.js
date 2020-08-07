@@ -25,3 +25,9 @@ export const PLAYLIST = "PLAYLIST";
 
 // 播放模式
 export const MODE = "MODE";
+
+// 播放历史
+export const PLAYHISTORY = "PLAYHISTORY";
+
+// 收藏喜欢的
+export const FAVORITELIST = "FAVORITELIST";

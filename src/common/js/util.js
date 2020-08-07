@@ -173,3 +173,39 @@ export function findIndex(song, list) {
   }
   return index;
 }
+
+// 插入和删除数据
+export function toggleList(song, list = []) {
+  let result = [];
+  let temp = [];
+
+  if (!song || !song.id) {
+    return list;
+  }
+
+  result = list.filter((item) => {
+    if (item.id === song.id) {
+      return true;
+    } else {
+      temp.push(item);
+      return false;
+    }
+  });
+
+  if (result.length === 0) {
+    temp.push(song);
+  }
+
+  return temp;
+}
+
+// 判断数据存在
+export function isExist(song, list = []) {
+  let result = [];
+
+  result = list.filter((item) => {
+    return item.id === song.id;
+  });
+
+  return result.length > 0;
+}

@@ -19,11 +19,15 @@ const mapDispatch = (dispatch) => ({
   },
   // 原始歌曲队列
   playerHandleSequenceList(value) {
-    dispatch(Actions.handleSequenceList(value))
+    dispatch(Actions.handleSequenceList(value));
   },
   // 歌曲播放队列
   playerHandleCurrentIndex(value) {
-    dispatch(Actions.handleCurrentIndex(value))
+    dispatch(Actions.handleCurrentIndex(value));
+  },
+  // 设置播放模式
+  playerHandleMode(value) {
+    dispatch(Actions.handleMode(value));
   }
 });
 

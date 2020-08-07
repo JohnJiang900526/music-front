@@ -44,3 +44,13 @@ export const handlePlaying = (value) =>({
   type: Types.PLAYING,
   value
 });
+
+export const handlePlayHistory = (value) =>({
+  type: Types.PLAYHISTORY,
+  value
+});
+
+export const handleFavoriteList = (value) =>({
+  type: Types.FAVORITELIST,
+  value
+});

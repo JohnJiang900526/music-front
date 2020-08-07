@@ -14,6 +14,8 @@ const state = {
   sequenceList: [],
   playlist: [],
   mode: playMode.sequence,
+  playHistory: [],
+  favoriteList: []
 };
 
 export default state;

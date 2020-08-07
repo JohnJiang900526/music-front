@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./index.less";
 
 import { PlayerAction } from "common/js/player-action";
+import { playMode } from "common/js/config";
 
 class MusicList extends Component {
   constructor (props) {
@@ -26,7 +27,7 @@ class MusicList extends Component {
     return (
       <div ref={e => this.TopBlock = e} style={{ "backgroundImage": this.props.logo }} className="music-top-block">
         <div className="play-wrapper">
-          <div className="play">
+          <div onClick={() => { this.handleClick(0, "random") }} className="play">
             <i className="icon-play"></i>
             <span className="text">随机播放全部</span>
           </div>
@@ -50,17 +51,21 @@ class MusicList extends Component {
     }
   }
 
-  handleClick (index) {
+  handleClick (index, type) {
     const {
       playerHandleSequenceList,
       playerHandleCurrentIndex,
       playerHandleFullScreen,
+      playerHandleMode,
       songs
     } = this.props;
 
     playerHandleSequenceList(songs);
     playerHandleCurrentIndex(index);
     playerHandleFullScreen(true);
+    if (type === "random") {
+      playerHandleMode(playMode.random);
+    }
   }
 
   listStyleOption = () => {

@@ -1,6 +1,6 @@
 import * as Types from './action-types';
 import defaultState from "./state";
-import { shuffle, findIndex } from "common/js/util";
+import { shuffle, findIndex, toggleList } from "common/js/util";
 import { playMode } from "common/js/config";
 
 export default (state = defaultState, action) => {
@@ -54,6 +54,12 @@ export default (state = defaultState, action) => {
       return newState;
     case Types.PLAYING:
       newState.playing = action.value;
+      return newState;
+    case Types.PLAYHISTORY:
+      newState.playHistory = toggleList(action.value, newState.playHistory);
+      return newState;
+    case Types.FAVORITELIST:
+      newState.favoriteList = toggleList(action.value, newState.favoriteList);
       return newState;
     default:
       return state;

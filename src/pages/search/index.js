@@ -8,6 +8,7 @@ import "./index.less";
 import { getHotKey, search } from "api/search";
 import { getPurlUrl } from "api/song";
 import { isValidMusic, createSong } from "common/js/song";
+import { PlayerAction } from "common/js/player-action";
 
 import {
   SearchSave,
@@ -132,6 +133,19 @@ class Search extends Component {
     }
   }
 
+  handleClick = (index) => {
+    const {
+      playerHandleSequenceList,
+      playerHandleCurrentIndex,
+      playerHandleFullScreen
+    } = this.props;
+    const songs = this.state.songs;
+
+    playerHandleSequenceList(songs);
+    playerHandleCurrentIndex(index);
+    playerHandleFullScreen(true);
+  }
+
   renderSuggest () {
     const { searchKey } = this.state;
     return (
@@ -151,9 +165,12 @@ class Search extends Component {
           }}>
           <ul className="suggest-lists">
             {
-              this.state.songs.map((item) => {
+              this.state.songs.map((item, index) => {
                 return(
-                  <li key={ item.id } className="suggest-item">
+                  <li 
+                    onClick={() => { this.handleClick(index) }} 
+                    key={ item.id } 
+                    className="suggest-item">
                     <div className="icon">
                       <i className="icon-music"></i>
                     </div>
@@ -197,7 +214,9 @@ class Search extends Component {
                 }
               </ul>
             </div>
-            <div className="search-history" style={{ display: this.state.history.length > 0 ? "block" : "none" }}>
+            <div 
+              className="search-history" 
+              style={{ display: this.state.history.length > 0 ? "block" : "none" }}>
               <h1 className="title">
                 <span className="text">搜索历史</span>
                 <span onClick={this.clearHistory} className="clear">
@@ -210,7 +229,7 @@ class Search extends Component {
                     this.state.history.map((item) => {
                       return (
                         <li key={ item } className="search-item">
-                          <span className="text">{ item }</span>
+                          <span  onClick={ () => { this.setData(item) } }  className="text">{ item }</span>
                           <span onClick={() => { this.deleteHistory(item) }} className="icon">
                             <i className="icon-delete"></i>
                           </span>
@@ -240,4 +259,4 @@ const mapStateToProps = state => ({
   playlist: state.playlist
 });
 
-export default connect(mapStateToProps, null)(Search);
+export default connect(mapStateToProps, null)(PlayerAction(Search));

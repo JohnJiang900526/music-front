@@ -5,9 +5,11 @@ import store from 'store';
 import "./index.less";
 import ProgressBar from "components/progress-bar";
 import ProgressCircle from "base/progress-circle";
+import PlayList from "components/play-list";
 import { playMode } from 'common/js/config'
 import { prefixStyle } from "common/js/dom";
 import * as Actions from 'store/actions';
+import { isExist } from "common/js/util";
 
 const transform = prefixStyle('transform');
 const transitionDuration = prefixStyle('transitionDuration');
@@ -26,6 +28,7 @@ class Player extends Component {
       miniStyle: {
         display: "none"
       },
+      openPlayList: false,
       radius: 32,
       currentShow: "cd",
       song: {},
@@ -39,41 +42,18 @@ class Player extends Component {
     };
 
     store.subscribe(() => {
-      const state = store.getState();
-      const { fullScreen, playlist, currentIndex, playing } = state;
-      const song = playlist[currentIndex] || {};
+      this.subscribeHandle();
+    });
+  }
 
-      if (fullScreen) {
-        if (fullScreen === this.state.fullScreen) {
-          return false;
-        }
+  // redux缓存订阅
+  subscribeHandle = () => {
+    const state = store.getState();
+    const { fullScreen, playlist, currentIndex, playing } = state;
+    const song = playlist[currentIndex] || {};
 
-        this.setState({ 
-          normalStyle: { display: "block", opacity: 1 },
-          fullScreen: true
-        }, () => {
-          this.Audio.play();
-        });
-      } else {
-        let miniStyle = {};
-        if (fullScreen === this.state.fullScreen) {
-          return false;
-        }
-
-        if (playlist.length > 0) {
-          miniStyle = {};
-        } else {
-          miniStyle = { display: "none" };
-        }
-
-        this.setState({ fullScreen: false }, () => {
-          this.delay(() => {
-            this.setState({ miniStyle, normalStyle: { display: "none", opacity: 0 } });
-          });
-        });
-      }
-
-      if (this.state.song.id !== song.id) {
+    if (this.state.song.url !== song.url) {
+      this.setState({ playing, song }, () => {
         if (this.state.currentLyric) {
           this.state.currentLyric.stop();
         }
@@ -86,10 +66,31 @@ class Player extends Component {
             this.state.currentLyric.seek(this.state.currentTime * 1000);
           });
         });
+      });
+    }
+
+    if (fullScreen) {
+      if (fullScreen === this.state.fullScreen) {
+        return false;
       }
 
-      this.setState({ playing, song });
-    });
+      this.setState({ 
+        normalStyle: { display: "block", opacity: 1 },
+        fullScreen: true
+      }, () => {
+        this.Audio.play();
+      });
+    } else {
+      if (fullScreen === this.state.fullScreen) {
+        return false;
+      }
+
+      this.setState({ fullScreen: false }, () => {
+        this.delay(() => {
+          this.setState({ normalStyle: { display: "none", opacity: 0 } });
+        });
+      });
+    }
   }
 
   // 延时方法
@@ -456,7 +457,7 @@ class Player extends Component {
   }
 
   // 修改播放模式
-  changePlayMode() {
+  changePlayMode = () => {
     let { mode } = this.props;
 
     if (mode === 2) {
@@ -548,7 +549,7 @@ class Player extends Component {
                 className="icon-next"/>
             </div>
             <div className="icon i-right">
-              <i className="icon icon-not-favorite"></i>
+              <i onClick={() => { this.toggleFavorite() }} className={this.isFavorite()}></i>
             </div>
           </div>
         </div>
@@ -558,8 +559,10 @@ class Player extends Component {
 
   // mini播放器
   miniPlayer () {
+    const miniStyle = this.props.playlist.length > 0 ? {} : { display: "none" };
+
     return (
-      <div className="mini-player" style={this.state.miniStyle}>
+      <div className="mini-player" style={miniStyle}>
         <div onClick={() => { this.props.handleFullScreen(true) }} className="icon">
           <div ref={(e) => { this.miniWrapper = e }} className="imgWrapper">
             <img
@@ -582,16 +585,56 @@ class Player extends Component {
           </ProgressCircle>
         </div>
         <div className="control">
-          <i className="icon-playlist"></i>
+          <i onClick={this.openPlayList} className="icon-playlist"></i>
         </div>
       </div>
     );
   }
 
+  closePlayList = () => {
+    const openPlayList = false;
+
+    this.setState({ openPlayList });
+  }
+
+  openPlayList = () => {
+    const openPlayList = true;
+
+    this.setState({ openPlayList });
+  }
+
+  toggleFavorite = () => {
+    const { song } = this.state;
+    if (!song.id) {
+      return false;
+    }
+
+    this.props.handleFavoriteList &&
+    this.props.handleFavoriteList(song);
+  }
+
+  isFavorite = () => {
+    const { song } = this.state;
+    if (!song.id) {
+      return "icon icon-not-favorite";
+    }
+
+    if (isExist(song, this.props.favoriteList)) {
+      return "icon icon-favorite";
+    } else {
+      return "icon icon-not-favorite";
+    }
+  }
+
   // play list
   playList() {
+    const styleOption = this.state.openPlayList ? {} : { display: "none" };
     return (
-      <div className="playlist"></div>
+      <div className="playlist-wrapper" style={ styleOption }>
+        <PlayList
+        changePlayMode={this.changePlayMode}
+        closePlayListHandle={this.closePlayList}/>
+      </div>
     );
   }
 
@@ -692,7 +735,8 @@ const mapStateToProps = state => ({
   playing: state.playing,
   currentIndex: state.currentIndex,
   mode: state.mode,
-  playlist: state.playlist
+  playlist: state.playlist,
+  favoriteList: state.favoriteList
 });
 
 // 接收action方法
@@ -708,6 +752,9 @@ const mapDispatch = (dispatch) => ({
   },
   handleMode(value) {
     dispatch(Actions.handleMode(value));
+  },
+  handleFavoriteList(value) {
+    dispatch(Actions.handleFavoriteList(value));
   }
 });
 

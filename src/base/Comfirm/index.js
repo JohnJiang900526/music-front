@@ -19,10 +19,6 @@ class Comfirm extends Component {
     };
   }
 
-  componentDidMount () {
-
-  }
-
   showHandle = () => {
     this.setState({ show: true });
   }
