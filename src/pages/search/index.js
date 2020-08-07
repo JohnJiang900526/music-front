@@ -75,7 +75,6 @@ class Search extends Component {
 
     search(searchKey, page, zhida, perpage).then(({ data = {} }) => {
       getPurlUrl(this.normalizeSongs(data.song.list)).then((result) => {
-        console.log(result.data);
         this.setState({ songs: result.data.songs });
         fn && fn();
       });

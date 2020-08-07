@@ -68,11 +68,10 @@ class Singer extends Component {
       let { list = [] } = res.data;
 
       handleSingers(list);
-      this.setState({
-        groups: formatSinger(list)
+      this.setState({ groups: formatSinger(list) }, () => {
+        this.initDom();
+        fn && fn();
       });
-      this.initDom();
-      fn && fn();
     });
   }
 
@@ -166,6 +165,19 @@ class Singer extends Component {
     ScrollDOM.scrollTop = isScroll ?  pos.offsetTop - 25: pos.offsetTop;
   }
 
+  PullToRefreshStyleOption = () => {
+    let height = this.state.height;
+
+    if (this.props.playlist.length > 0) {
+      height = height - 60;
+    }
+
+    return {
+      height,
+      overflow: 'auto'
+    }
+  }
+
   render () {
     let PullToRefreshStyleOption = {
       height: this.state.height,
@@ -175,13 +187,13 @@ class Singer extends Component {
     return (
       <div className="singer">
         <div className="singer-inner">
-          <div 
+          <div
             className="singer-group-list"
             onScroll={this.onScroll}  
             ref={el => this.WrapHeight = el}>
               <PullToRefresh 
                 damping={ 120 }
-                style={ PullToRefreshStyleOption }
+                style={ this.PullToRefreshStyleOption() }
                 indicator={down ? downOption : { deactivate: '上拉' }}
                 direction={down ? 'down' : 'up'}
                 refreshing={ refreshing }
@@ -207,7 +219,8 @@ class Singer extends Component {
 
 // 接收state数据
 const mapStateToProps = state => ({
-  singers: [...state.singers]
+  singers: [...state.singers],
+  playlist: state.playlist
 });
 
 // 接收action方法

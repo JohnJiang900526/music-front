@@ -61,12 +61,28 @@ class MusicList extends Component {
     playerHandleSequenceList(songs);
     playerHandleCurrentIndex(index);
     playerHandleFullScreen(true);
+
+    console.log(this.props);
+  }
+
+  listStyleOption = () => {
+    let top = this.state.offsetTop;
+    let bottom = 0;
+
+    if (this.props.playerStatePlaylist.length > 0) {
+      bottom = 60;
+    }
+
+    return {
+      top: `${top}px`,
+      bottom: `${bottom}px`
+    }
   }
 
   renderMain () {
     return (
       <div
-        style={{ "top": this.state.offsetTop + "px" }}
+        style={this.listStyleOption()}
         className="music-main-block">
         <ul className="music-list">
           {

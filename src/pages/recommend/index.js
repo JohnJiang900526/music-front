@@ -90,7 +90,7 @@ class Recommend extends Component {
         <div className="banner-inner">
           <Carousel
             className="carousel-block"
-            autoplay={ false }
+            autoplay={ true }
             infinite
             selectedIndex={ 0 }>
             {
@@ -109,18 +109,27 @@ class Recommend extends Component {
     )
   }
 
-  render () {
-    let PullToRefreshStyleOption = {
-      height: this.state.height,
+  PullToRefreshStyleOption = () => {
+    let height = this.state.height;
+
+    if (this.props.playlist.length > 0) {
+      height = height - 60;
+    }
+
+    return {
+      height,
       overflow: 'auto'
-    };
+    }
+  }
+
+  render () {
     let { down, downOption, refreshing } = this.state;
 
     return (
       <div className="recommend" ref={el => this.WrapHeight = el}>
         <PullToRefresh 
           damping={ 120 }
-          style={ PullToRefreshStyleOption }
+          style={ this.PullToRefreshStyleOption() }
           indicator={down ? downOption : { deactivate: '上拉可以刷新' }}
           direction={down ? 'down' : 'up'}
           refreshing={ refreshing }
@@ -141,7 +150,8 @@ class Recommend extends Component {
 
 // 接收state数据
 const mapStateToProps = state => ({
-  recommend: Object.assign({}, state.recommend)
+  recommend: Object.assign({}, state.recommend),
+  playlist: state.playlist
 });
 
 // 接收action方法
