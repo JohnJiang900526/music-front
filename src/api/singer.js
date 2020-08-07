@@ -12,7 +12,7 @@ export function getSingerList() {
 }
 
 export function getSingerDetail(singerId) {
-  const url = debug ? `/api/singer/detail/${singerId}` : `${host_url}/api/singer/singer/${singerId}`;
+  const url = debug ? `/api/singer/detail/${singerId}` : `${host_url}/api/singer/detail/${singerId}`;
 
   return axios.get(url).then((res) => {
     return Promise.resolve(res.data)

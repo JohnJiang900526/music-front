@@ -3,8 +3,8 @@ import {
   Route,
   Switch,
   Redirect,
-  BrowserRouter as Router,
-  // HashRouter as Router,
+  // BrowserRouter as Router,
+  HashRouter as Router,
 } from "react-router-dom";
 import "./index.less";
 
