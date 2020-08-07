@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { PullToRefresh } from 'antd-mobile';
+import { connect } from "react-redux";
 import SearchBox from "base/search-box";
 import Comfirm from "base/Comfirm";
 import "./index.less";
@@ -118,6 +119,19 @@ class Search extends Component {
     this.SearchBox.setData(val);
   }
 
+  PullToRefreshStyleOption = () => {
+    let height = this.state.height;
+
+    if (this.props.playlist.length > 0) {
+      height = height - 60;
+    }
+
+    return {
+      height,
+      overflow: 'auto'
+    }
+  }
+
   renderSuggest () {
     const { searchKey } = this.state;
     return (
@@ -125,10 +139,7 @@ class Search extends Component {
         <PullToRefresh
           damping={ 100 }
           ref={el => this.ptr = el}
-          style={{
-            height: this.state.height,
-            overflow: 'auto',
-          }}
+          style={this.PullToRefreshStyleOption()}
           indicator={this.state.down ? {} : { deactivate: '上拉可以刷新' }}
           direction={this.state.down ? 'down' : 'up'}
           refreshing={this.state.refreshing}
@@ -224,4 +235,9 @@ class Search extends Component {
   }
 }
 
-export default Search;
+// 接收state数据
+const mapStateToProps = state => ({
+  playlist: state.playlist
+});
+
+export default connect(mapStateToProps, null)(Search);

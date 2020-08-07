@@ -179,10 +179,6 @@ class Singer extends Component {
   }
 
   render () {
-    let PullToRefreshStyleOption = {
-      height: this.state.height,
-      overflow: 'auto'
-    };
     let { down, downOption, refreshing } = this.state;
     return (
       <div className="singer">

@@ -61,8 +61,6 @@ class MusicList extends Component {
     playerHandleSequenceList(songs);
     playerHandleCurrentIndex(index);
     playerHandleFullScreen(true);
-
-    console.log(this.props);
   }
 
   listStyleOption = () => {
