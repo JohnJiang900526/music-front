@@ -54,9 +54,7 @@ class Player extends Component {
 
     if (this.state.song.url !== song.url) {
       this.setState({ playing, song }, () => {
-        if (this.state.currentLyric) {
-          this.state.currentLyric.stop();
-        }
+        this.Audio.play();
 
         this.clearLyric(() => {
           this.getLyric(() => {
@@ -77,8 +75,6 @@ class Player extends Component {
       this.setState({ 
         normalStyle: { display: "block", opacity: 1 },
         fullScreen: true
-      }, () => {
-        this.Audio.play();
       });
     } else {
       if (fullScreen === this.state.fullScreen) {
@@ -267,9 +263,6 @@ class Player extends Component {
     this.props.handleCurrentIndex(index);
     this.props.handlePlaying(false);
     this.setState({ songReady });
-    this.delay(() => {
-      this.togglePlaying();
-    });
   }
 
   // 播放上一首歌曲
@@ -293,9 +286,6 @@ class Player extends Component {
     this.props.handleCurrentIndex(index);
     this.props.handlePlaying(false);
     this.setState({ songReady });
-    this.delay(() => {
-      this.togglePlaying();
-    });
   }
 
   // 循环播放
@@ -341,9 +331,10 @@ class Player extends Component {
     if (!song.getLyric) { return false; }
     song.getLyric().then((lyric) => {
       if (this.Lyric !== lyric) {
-        this.Lyric = lyric;
-
         const currentLyric = new Lyric(lyric, this.handleLyric);
+
+        this.Lyric = lyric;
+        this.props.handlePlayHistory(song);
         this.setState({ lyric, currentLyric }, () => {
           fn && fn();
         });
@@ -755,6 +746,9 @@ const mapDispatch = (dispatch) => ({
   },
   handleFavoriteList(value) {
     dispatch(Actions.handleFavoriteList(value));
+  },
+  handlePlayHistory(value) {
+    dispatch(Actions.handlePlayHistory(value));
   }
 });
 

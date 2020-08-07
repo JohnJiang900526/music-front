@@ -49,6 +49,11 @@ class PlayList extends Component {
     this.props.closePlayListHandle();
   }
 
+  wrapperHandle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
   // 清空操作
   clearHandle = (e) => {
     e.preventDefault();
@@ -99,6 +104,11 @@ class PlayList extends Component {
     }
   }
 
+  handleCurrentIndex = (index) => {
+    this.props.handleCurrentIndex &&
+    this.props.handleCurrentIndex(index);
+  }
+
   renderList () {
     const playIcon = (index) => {
       return this.props.currentIndex === index ? "current icon-play" : "current";
@@ -109,7 +119,7 @@ class PlayList extends Component {
         return (
           <li key={ item.id } className="item">
             <i className={playIcon(index)}></i>
-            <span className="text">{ item.name }</span>
+            <span onClick={() => { this.handleCurrentIndex(index) }} className="text">{ item.name }</span>
             <span onClick={() => { this.toggleFavorite(item) }} className="like">
               <i className={this.isFavorite(item)}></i>
             </span>
@@ -126,8 +136,8 @@ class PlayList extends Component {
 
   render() {
     return (
-      <div className="play-list">
-        <div className="list-wrapper">
+      <div onClick={this.closeHandle} className="play-list">
+        <div onClick={this.wrapperHandle} className="list-wrapper">
           <div className="list-header">
             <h2 className="title">
               <i onClick={this.changePlayMode} className={this.computedModeClass()}></i>
@@ -142,7 +152,7 @@ class PlayList extends Component {
               { this.renderList() }
             </ul>
           </div>
-          <div className="list-operate">
+          <div className="list-operate hide">
             <div className="add">
               <i className="icon-add"></i>
               <span className="text">添加歌曲到队列</span>

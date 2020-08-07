@@ -199,6 +199,23 @@ export function toggleList(song, list = []) {
   return temp;
 }
 
+// 插入数据
+export function insertList(song, list = []) {
+  let result = [];
+
+  if (!song || !song.id) {
+    return list;
+  }
+
+  result = list.filter((item) => {
+    return item.id !== song.id;
+  });
+
+  result.push(song);
+
+  return result;
+}
+
 // 判断数据存在
 export function isExist(song, list = []) {
   let result = [];
