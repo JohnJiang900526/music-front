@@ -153,5 +153,5 @@
     "less": "^3.12.2",
     "less-loader": "^6.2.0"
   },
-  "proxy": "http://115.159.27.193:3001"
+  "proxy": "http://www.jiangangshjd.cn:3001"
 }
